@@ -1,0 +1,197 @@
+estructura de proyecto django
+
+Carpeta del proyecto — contiene ↓
+	env (entorno virtual donde va django)
+	miBlog (contiene DB, manage.py) — contiene ↓
+		miBlog (init, settings, urls asgi, wsgi —todos ".py"—)
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+Ya creado el proyecto, ingresar a consola:
+	cd carpetaProyecto
+	source env/bin/activate
+	cd miblog
+	./manage.py runserver
+	{ en settings.py poner DEBUG = False }
+	{ en settings.py poner }
+	volver a ejecutar ./manage.py runserver cuando se actualicen
+	archivos como settings.py en caso que el sitio crashee.
+	sino probar: sudo python3 ./manage.py runserver
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+Seteo de django
+
+1) Crea entorno virtual
+	python3 -m venv env 
+
+2) pip freeze 
+	(?)
+
+3) Instala django eN el virtualenv nombrado "env"
+	pip3 install django 
+
+4) Crea nuevo proyecto django (con nombre miProyectoWeb)    
+	django-admin startproject miProyectoWeb
+
+5) Configura lenguaje y zona horaria del proyecto
+	en settings.py asignar valores:
+	LANGUAGE_CODE = 'es-AR'
+	TIME_ZONE = 'America/Argentina/Burnos_Aires'
+
+6) Configura SQLite como DB, en settings.py
+	# Database
+	# https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+	DATABASES = {
+	    'default': {
+		'ENGINE': 'django.db.backends.sqlite3',
+		'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+	    }
+	}
+
+7) Crea esquemas/tablas en la base. En consola:
+	./manage.py migrate
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+Creación de la app
+
+1) Crea app (nombre hello):
+	    django-admin startapp miBlog
+
+2) Escribe función que reciba request de usuario y retorne "Hola mundo".
+   views.py maneja requests de usuarios.
+	code miBlog/views.py
+
+3) Relaciona una url que al ser visitada por el usuario ejecuta una
+   función "say_hello". Esto se hace en el archivo urls.py y se conoce
+   como url routing.
+
+   En views.py:
+	def say_hello(request):
+	    """returns a message"""
+	    return render(request, 'hello.html', context={"value1": "World"})
+
+   En urls.py
+	from django.conf.urls import url
+	from django.contrib import admin
+
+	from hello.views import say_hello #importa la vista
+
+	urlpatterns = [
+	    url(r'^admin/', admin.site.urls),
+	    url(r'^hello/', say_hello)
+	]
+
+   En settings.py agregamos la nueva aplicación a la lista de installed apps:
+	INSTALLED_APPS += [
+		'hello',
+	]
+
+4) Inicia el servidor web que django provee que permite ver nuestro    
+   trabajo mientras se lo desarrollamos:
+	./manage.py runserver
+
+5) Abre el navegador web y da bienvenida a servidor django:
+	http://127.0.0.1:8000/
+
+6) Crea template para la vista de la función "say_hello" (hay que 
+   mantener el servidor corriendo):
+	http://127.0.0.1:8000/hello/
+
+7) Surge error de que template “hello.html” en nuestra app “hello” no 
+   existe. Para agregar este template, vamos a seguir dos pasos:
+
+   Crea directorio templates dentro de la app "hello"
+	cd hello/
+	ls
+	mkdir templates/
+
+   crea archivo .htmll dentro de directorio templates y lo editamos
+	ls templates/
+	cd templates/
+	touch hello.html
+
+	<!DOCTYPE html>
+	<html lang="en">
+	<head>
+	    <meta charset="UTF-8">
+	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+	</head>
+	<body>
+	  <h1>Hola {{value}}!</h1>
+	</body>
+	</html>
+
+   notar que todo lo que se pone entre {{}} se reemplaza por los valores 
+   asignados en el contexto a la hora de retornar la función de la vista.
+   
+   recordar el cuerpo de la función views.py:
+	return render(request, 'hello.html', context={"value1": "World"})
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+Resumiendo, el flujo a la hora de trabajar con modelos es:
+
+1) Editar <nombre_app>/models.py
+2) Generar archivo de migraciones con ./manage.py makemigrations <nombre_app>
+3) Aplicar las migraciones en la base de datos con ./manage.py migrate
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+Trabajo en el shell de django
+
+1) ./manage.py shell (en el mismo directorio donde esté manage.py)
+
+importa modelo Question desde polls.models
+	from polls.models import Question
+	question = Question()
+
+asigna valor a sus variables de clase
+	question.text_text = 'cuantos ingredientes tiene la sopa de remolacha?'
+
+importa datetime para setear fecha
+	from datetime import date
+	question.pub_date = date.today()
+
+guarda pregunta (la inserta en la base)
+	question.save()
+
+listar preguntas
+	from polls.models import Question
+	Question.objects.all()
+
+obtiene cantidad de preguntas
+	len(Question.objects.all())
+
+obtiene primer elemento de la lista
+	q1 = Question.objects.all()[0]
+
+imprime texto de pregunta
+	q1.question_text
+
+filtra preguntas que tienen la palabra 'remolacha'
+	Question.objectss.filter(question_text__icontains='remolacha')
+
+cuenta las preguntas que tienen la palabra 'remolacha'
+	Question.objectss.filter(question_text__icontains='remolacha').count()
+
+crea una instancia de Choice (opcion de respuesta a pregunta)
+	from polls.models import Choice
+	choice1 = Choice()
+
+trae una question para asignarla como FK al field question de choice1
+	from polls.models import Question
+	question = Question.objects.first()
+	choice1.question = question
+	choice1.choice_text = 'nueve'
+	choice1.save()
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+
+
+	
+
