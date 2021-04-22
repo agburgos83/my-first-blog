@@ -188,10 +188,3 @@ trae una question para asignarla como FK al field question de choice1
 	choice1.question = question
 	choice1.choice_text = 'nueve'
 	choice1.save()
-
-— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
-
-
-
-	
-
