@@ -188,3 +188,24 @@ trae una question para asignarla como FK al field question de choice1
 	choice1.question = question
 	choice1.choice_text = 'nueve'
 	choice1.save()
+
+— — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — — —
+
+lógica al incorporar una nueva funcionalidad:
+
+Puede requerir crear un archivo .py (x ej formularios):
+
+1) crear en dicho archivo la/s clase/s necesarias
+2) linkear la funcionalidad con una url (en base.html)
+3) definir el path de dicha página (en urls.py)
+4) importar la clase de la funcionalidad (a views.py)
+5) definir la función que resolverá el request para dicha funcionalidad (en views.py)
+6) crear un template que extienda a base.html y estructure los tags django para ese contenido
+
+O no requerir la creación de un nuevo archivo (x ej detalle de post)
+
+1) ya existe un modelo de lo que quiero mostrar
+2) agrego un enlace a la funcionalidad a desplegar en el template que corresponda
+3) agrego la url correspondiente (en urls.py)
+4) agregar la función encargada de renderizar lo que se desea mostrar (en views.py)
+5) crear un template que extienda a base.html y estructure los tags django para ese contenido
